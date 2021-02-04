@@ -1,0 +1,47 @@
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//docker/package_managers:download_pkgs.bzl", "download_pkgs")
+load("@io_bazel_rules_docker//docker/package_managers:install_pkgs.bzl", "install_pkgs")
+load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_commit", "container_run_and_extract")
+
+package(default_visibility = ["//visibility:public"])
+
+download_pkgs(
+    name = "diagrams_pkgs",
+    image_tar = "@python_image//image",
+    packages = [
+        "graphviz",
+    ],
+)
+
+install_pkgs(
+    name = "diagrams_image_base",
+    image_tar = "@python_image//image",
+    installables_tar = ":diagrams_pkgs.tar",
+    installation_cleanup_commands = "rm -rf /var/lib/apt/lists/*",
+    output_image_name = "diagrams_image_base",
+)
+
+container_run_and_commit(
+    name = "diagrams_image",
+    commands = [
+        "pip install diagrams==0.18.0",
+    ],
+    image = ":diagrams_image_base.tar",
+)
+
+container_image(
+    name = "diagrams_to_build_example",
+    base = ":diagrams_image",
+    directory = "/root",
+    workdir = "/root",
+    files = ["example.py"],
+)
+
+container_run_and_extract(
+    name = "example",
+    commands = [
+        "python example.py",
+    ],
+    extract_file = "/root/grouped_workers.png",
+    image = ":diagrams_to_build_example.tar",
+)
