@@ -34,6 +34,6 @@ container_pull(
     name = "python_image",
     registry = "index.docker.io",
     repository = "python",
-    digest = "sha256:bdc5af48b5f7bf9fe141057d17dbdfbfadc1c348dbb7292f8856d993bd66af63",
+    digest = "sha256:2a7e1b9e632b7a3a967dbddbf8c80fff234f10f9cb647b253c6405252db41c9c",
     tag = "3.9.1",
 )
